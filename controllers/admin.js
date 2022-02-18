@@ -53,9 +53,30 @@ router.get("/feedbackManage/delete", async (req, res) => {
 });
 router.get("/feedbackManage/:day", async (req, res, next) => {
   let result = await dbHandler.getAllFeedback();
-  const today = new Date().toDateString();
+  const today = new Date();
   if (req.params.day === "today") {
-    result = result.filter((e) => new Date(e.time).toDateString() === today);
+    result = result.filter((e) => new Date(e.time).toDateString() === today.toDateString());
+    res.render("adminPage", {
+      feedback: result,
+      user: req.session.user,
+    });
+  } else if (req.params.day === "2days") {
+    const queryDay = new Date(today.setDate(today.getDate() - 2));
+    result = result.filter((e) => new Date(e.time) > queryDay);
+    res.render("adminPage", {
+      feedback: result,
+      user: req.session.user,
+    });
+  } else if (req.params.day === "2weeks") {
+    const queryDay = new Date(today.setDate(today.getDate() - 14));
+    result = result.filter((e) => new Date(e.time) > queryDay);
+    res.render("adminPage", {
+      feedback: result,
+      user: req.session.user,
+    });
+  } else if (req.params.day === "2months") {
+    const queryDay = new Date(today.setMonth(today.getMonth() - 2));
+    result = result.filter((e) => new Date(e.time) > queryDay);
     res.render("adminPage", {
       feedback: result,
       user: req.session.user,
